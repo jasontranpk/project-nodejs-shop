@@ -5,13 +5,15 @@ const bodyParser = require('body-parser');
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const errorController = require('./controllers/error');
-const sequelize = require('./helpers/database');
-const Product = require('./models/product');
 const User = require('./models/user');
+/* const sequelize = require('./helpers/database');
+const Product = require('./models/product');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
 const Order = require('./models/order');
-const OrderItem = require('./models/order-item');
+const OrderItem = require('./models/order-item'); */
+
+const mongoConnect = require('./helpers/database').mongoConnect;
 
 const app = express();
 app.set('view engine', 'ejs');
@@ -21,12 +23,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-	User.findByPk(1)
+	User.findById('63462204cf9d8efcad0d4922')
 		.then((user) => {
-			req.user = user;
+			req.user = new User(user.name, user.email, user.cart, user._id);
 			next();
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			console.log(err);
+		});
 });
 
 app.use('/admin', adminData.routes);
@@ -34,36 +38,15 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
-User.hasMany(Product);
-
-User.hasOne(Cart);
-Cart.belongsTo(User);
-
-Cart.belongsToMany(Product, { through: CartItem });
-Product.belongsToMany(Cart, { through: CartItem });
-
-Order.belongsTo(User);
-User.hasMany(Order);
-
-Product.belongsToMany(Order, { through: OrderItem });
-Order.belongsToMany(Product, { through: OrderItem });
-
-sequelize
-	// .sync({ force: true })
-	.sync()
-	.then((result) => {
-		return User.findByPk(1);
-	})
-	.then((user) => {
-		if (!user) {
-			return User.create({ name: 'Jason', email: 'test@test.com' });
+mongoConnect((client) => {
+	User.findById('63462204cf9d8efcad0d4922').then((u) => {
+		if (u) {
+			app.listen(3000);
+		} else {
+			u = new User('admin', 'admin@test.com');
+			u.save().then(() => {
+				app.listen(3000);
+			});
 		}
-		return user;
-	})
-	.then((user) => user.createCart())
-	.then((user) => {
-		// console.log(user);
-		app.listen(3000);
-	})
-	.catch((err) => console.log(err));
+	});
+});
