@@ -1,4 +1,32 @@
-const { ObjectId } = require('mongodb');
+const mongoose = require('mongoose');
+
+const Schema = mongoose.Schema;
+
+const productSchema = new Schema({
+	title: {
+		type: String,
+		required: true,
+	},
+	price: {
+		type: String,
+		required: true,
+	},
+	description: {
+		type: String,
+		required: true,
+	},
+	imageUrl: {
+		type: String,
+		required: true,
+	},
+	userId: {
+		type: Schema.Types.ObjectId,
+		ref: 'User',
+	},
+});
+
+module.exports = mongoose.model('Product', productSchema);
+/* const { ObjectId } = require('mongodb');
 const getDb = require('../helpers/database').getDb;
 
 class Product {
@@ -57,33 +85,5 @@ class Product {
 	}
 }
 
-/* const Sequelize = require('sequelize');
-
-const sequelize = require('../helpers/database');
-
-const Product = sequelize.define('product', {
-	id: {
-		type: Sequelize.INTEGER,
-		autoIncrement: true,
-		allowNull: false,
-		primaryKey: true,
-	},
-	title: {
-		type: Sequelize.STRING,
-		allowNull: false,
-	},
-	price: {
-		type: Sequelize.DOUBLE,
-		allowNull: false,
-	},
-	imageUrl: {
-		type: Sequelize.STRING,
-		allowNull: false,
-	},
-	description: {
-		type: Sequelize.STRING,
-		allowNull: false,
-	},
-}); */
-
 module.exports = Product;
+ */
