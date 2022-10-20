@@ -20,6 +20,7 @@ exports.getProducts = (req, res, next) => {
 				prods: products,
 				pageTitle: 'All Products',
 				path: '/products',
+				isAuthenticated: req.session.isLoggedIn,
 			});
 		})
 		.catch((err) => console.log(err));
@@ -38,6 +39,7 @@ exports.getProduct = (req, res, next) => {
 				pageTitle: product.title,
 				product: product,
 				path: '/product-detail',
+				isAuthenticated: req.session.isLoggedIn,
 			});
 		})
 		.catch((err) => console.log(err));
@@ -64,6 +66,7 @@ exports.getCart = (req, res, next) => {
 				pageTitle: 'Your Cart',
 				path: '/cart',
 				products: products,
+				isAuthenticated: req.session.isLoggedIn,
 			});
 		})
 		.catch((err) => console.log(err));
@@ -89,7 +92,7 @@ exports.postOrder = (req, res, next) => {
 			items: products,
 			user: {
 				userId: req.user.id,
-				name: req.user.name,
+				email: req.user.email,
 			},
 		});
 		order
@@ -111,68 +114,4 @@ exports.getOrders = (req, res, next) => {
 			orders: orders,
 		});
 	});
-	/* 	req.user.getOrders().then((orders) => {
-
-	}); */
 };
-/* 
-
-
-
-
-exports.postCart = (req, res, next) => {
-	const prodId = req.body.productId;
-	let fetchedCart;
-	let newQuantity;
-	req.user
-		.getCart()
-		.then((cart) => {
-			fetchedCart = cart;
-			return cart.getProducts({ where: { id: prodId } });
-		})
-		.then((products) => {
-			let product;
-			if (products.length > 0) {
-				product = products[0];
-			}
-			newQuantity = 1;
-			if (product) {
-				const oldQuantity = product.cartItem.quantity;
-				newQuantity = oldQuantity + 1;
-				return product;
-			}
-			return Product.findByPk(prodId);
-		})
-		.then((product) => {
-			return fetchedCart.addProduct(product, {
-				through: { quantity: newQuantity },
-			});
-		})
-		.then(() => res.redirect('/cart'))
-		.catch((err) => console.log(err));
-};
-
-exports.postCartDeleteItem = (req, res, next) => {
-	const prodId = req.body.productId;
-	req.user
-		.getCart()
-		.then((cart) => {
-			return cart.getProducts({ where: { id: prodId } });
-		})
-		.then(([product]) => {
-			return product.cartItem.destroy();
-		})
-		.then(() => res.redirect('/cart'))
-		.catch((err) => console.log(err));
-};
-
-
-
-exports.getCheckout = (req, res, next) => {
-	res.render('shop/checkout', {
-		pageTitle: 'Checkout',
-		path: '/checkout',
-	});
-};
-
- */
