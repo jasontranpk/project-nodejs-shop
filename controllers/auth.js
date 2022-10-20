@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+const { validationResult } = require('express-validator');
 
 const User = require('../models/user');
 
@@ -19,23 +20,32 @@ exports.getLogin = (req, res, next) => {
 		pageTitle: 'Login',
 		path: '/login',
 		errorMessage: req.flash('error'),
+		validationErrors: [],
+		oldInput: { email: '' },
 	});
 };
 exports.postLogin = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	if (!email) {
-		req.flash('error', 'Email cannot be empty');
-		return res.redirect('/login');
-	}
-	if (!password) {
-		req.flash('error', 'Password cannot be empty');
-		return res.redirect('/login');
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).render('auth/login', {
+			pageTitle: 'Login',
+			path: '/login',
+			errorMessage: errors.array()[0].msg,
+			validationErrors: errors.array(),
+			oldInput: { email: email },
+		});
 	}
 	User.findOne({ email: email }).then((user) => {
 		if (!user) {
-			req.flash('error', 'Invalid email');
-			return res.redirect('/login');
+			return res.status(422).render('auth/login', {
+				pageTitle: 'Login',
+				path: '/login',
+				errorMessage: 'Invalid email',
+				validationErrors: [],
+				oldInput: { email: email },
+			});
 		}
 		bcrypt
 			.compare(password, user.password)
@@ -66,45 +76,44 @@ exports.getSignup = (req, res, next) => {
 		pageTitle: 'Signup',
 		path: '/signup',
 		errorMessage: req.flash('error'),
+		oldInput: { email: '' },
+		validationErrors: [],
 	});
 };
-
 exports.postSignup = (req, res, next) => {
 	const email = req.body.email;
 	const password = req.body.password;
-	const confirmPassword = req.body.confirmPassword;
-	if (password !== confirmPassword) {
-		req.flash('error', 'Password And Confirm Password Must Match');
-		return res.redirect('/signup');
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return res.status(422).render('auth/signup', {
+			pageTitle: 'Signup',
+			path: '/signup',
+			errorMessage: errors.array()[0].msg,
+			oldInput: { email: email, password: password },
+			validationErrors: errors.array(),
+		});
 	}
-	User.findOne({ email: email })
-		.then((user) => {
-			if (user) {
-				req.flash('error', 'Email is already used');
-				return res.redirect('/signup');
-			}
-			return bcrypt
-				.hash(password, 12)
-				.then((hashedPassword) => {
-					const user = new User({
-						email: email,
-						password: hashedPassword,
-						cart: { items: [] },
-					});
-					return user.save();
-				})
-				.then(() => {
-					res.redirect('/login');
-					return transporter.sendMail({
-						to: email,
-						from: 'jasontran.pk@gmail.com',
-						subject: 'Signup succeeded',
-						html: '<h1>You successfully signed up!</h1>',
-					});
-				});
+	return bcrypt
+		.hash(password, 12)
+		.then((hashedPassword) => {
+			const user = new User({
+				email: email,
+				password: hashedPassword,
+				cart: { items: [] },
+			});
+			return user.save();
 		})
-		.catch((err) => console.log(err));
+		.then(() => {
+			res.redirect('/login');
+			return transporter.sendMail({
+				to: email,
+				from: 'jasontran.pk@gmail.com',
+				subject: 'Signup succeeded',
+				html: '<h1>You successfully signed up!</h1>',
+			});
+		});
 };
+
 exports.getReset = (req, res, next) => {
 	res.render('auth/reset', {
 		pageTitle: 'Reset Password',
@@ -112,7 +121,6 @@ exports.getReset = (req, res, next) => {
 		errorMessage: req.flash('error'),
 	});
 };
-
 exports.postReset = (req, res, next) => {
 	crypto.randomBytes(32, (err, buffer) => {
 		if (err) {
@@ -145,6 +153,7 @@ exports.postReset = (req, res, next) => {
 			});
 	});
 };
+
 exports.getNewPassword = (req, res, next) => {
 	const token = req.params.token;
 	User.findOne({
@@ -166,7 +175,6 @@ exports.getNewPassword = (req, res, next) => {
 		})
 		.catch((err) => console.log(err));
 };
-
 exports.postNewPassword = (req, res, next) => {
 	const newPassword = req.body.password;
 	const userId = req.body.userId;
