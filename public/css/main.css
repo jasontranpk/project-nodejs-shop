@@ -179,7 +179,8 @@ form {
 }
 
 .card__image {
-	width: 100%;
+	width: 30%;
+	margin: auto;
 }
 
 .card__image img {
@@ -240,6 +241,24 @@ form {
 	background-color: rgb(238, 178, 178);
 }
 
+.pagination {
+	text-align: center;
+}
+
+.pagination a {
+	text-decoration: none;
+	color: #00695c;
+	padding: 0.5rem;
+	border: 1px solid #00695c;
+	margin: 0 1rem;
+}
+
+.pagination a:hover,
+.pagination a:active,
+.pagination a.active {
+	background: #00695c;
+	color: white;
+}
 @media (min-width: 768px) {
 	.main-header__nav {
 		display: flex;

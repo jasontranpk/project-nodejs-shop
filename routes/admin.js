@@ -13,7 +13,7 @@ router.post(
 		body('title', 'Please enter a valid title')
 			.trim()
 			.isLength({ min: 3 })
-			.isAlphanumeric()
+			.isString()
 			.notEmpty(),
 		body('imageUrl', 'Please enter a valid image url').trim(),
 		body('price', 'Please enter a valid price')
@@ -22,8 +22,7 @@ router.post(
 			.notEmpty(),
 		body('description', 'Please enter a valid description')
 			.trim()
-			.isLength({ min: 3, max: 400 })
-			.notEmpty(),
+			.isLength({ min: 3, max: 400 }),
 	],
 	adminController.postAddProduct
 );
@@ -37,7 +36,7 @@ router.post(
 		body('title', 'Please enter a valid title')
 			.trim()
 			.isLength({ min: 3 })
-			.isAlphanumeric()
+			.isString()
 			.notEmpty(),
 		body('price', 'Please enter a valid price')
 			.trim()
@@ -51,7 +50,8 @@ router.post(
 	adminController.postEditProduct
 );
 
-router.post('/delete-product', isAuth, adminController.postDeleteProduct);
+router.delete('/product/:productId', isAuth, adminController.deleteProduct);
+// router.post('/delete-product', isAuth, adminController.postDeleteProduct);
 
 router.get('/products', isAuth, adminController.getProducts);
 
