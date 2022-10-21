@@ -14,9 +14,9 @@ const authRoutes = require('./routes/auth');
 const errorController = require('./controllers/error');
 const User = require('./models/user');
 
+require('dotenv').config();
 const app = express();
-const MONGODB_URI =
-	'mongodb+srv://admin:nodecomplete@cluster0.p0mjcad.mongodb.net/shop?retryWrites=true&w=majority';
+const MONGODB_URI = process.env.MONGODB_URI;
 const store = new MongoDBStore({
 	uri: MONGODB_URI,
 	collection: 'sessions',
