@@ -15,7 +15,7 @@ router.post(
 			.isLength({ min: 3 })
 			.isAlphanumeric()
 			.notEmpty(),
-		body('imageUrl', 'Please enter a valid image url').trim().isURL(),
+		body('imageUrl', 'Please enter a valid image url').trim(),
 		body('price', 'Please enter a valid price')
 			.trim()
 			.isNumeric()
@@ -39,7 +39,6 @@ router.post(
 			.isLength({ min: 3 })
 			.isAlphanumeric()
 			.notEmpty(),
-		body('imageUrl', 'Please enter a valid image url').trim().isURL(),
 		body('price', 'Please enter a valid price')
 			.trim()
 			.isNumeric()

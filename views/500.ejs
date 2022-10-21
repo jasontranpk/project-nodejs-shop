@@ -4,4 +4,6 @@
         <%- include('includes/navigation.ejs') %>
 		<h1>Some Error Occured!</h1>
         <p>We're working on fixing this, sorry for the inconvenience</p>
+		<% if(errorMessage) %>
+		<p>Error Details: <%= errorMessage %> </p>
 <%- include('includes/end.ejs') %>

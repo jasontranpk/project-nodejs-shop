@@ -58,8 +58,13 @@ exports.postLogin = (req, res, next) => {
 						res.redirect('/');
 					});
 				} else {
-					req.flash('error', 'Invalid Password');
-					return res.redirect('/login');
+					return res.status(422).render('auth/login', {
+						pageTitle: 'Login',
+						path: '/login',
+						errorMessage: 'Invalid Password',
+						validationErrors: [],
+						oldInput: { email: email },
+					});
 				}
 			})
 			.catch((err) => {
@@ -133,7 +138,6 @@ exports.getReset = (req, res, next) => {
 exports.postReset = (req, res, next) => {
 	crypto.randomBytes(32, (err, buffer) => {
 		if (err) {
-			console.log(err);
 			return res.redirect('/reset');
 		}
 		const token = buffer.toString('hex');
