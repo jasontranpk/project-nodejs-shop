@@ -47,7 +47,26 @@ exports.postAddProduct = (req, res, next) => {
 			console.log('Created Product');
 			res.redirect('/admin/products');
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			/* 			return res.status(500).render('admin/edit-product', {
+				pageTitle: 'Add Product',
+				path: '/admin/add-product',
+				editing: false,
+				errorMessage: 'Database operation failed, please try again',
+				hasError: true,
+				validationErrors: errors.array(),
+				product: {
+					title: title,
+					imageUrl: imageUrl,
+					price: price,
+					description: description,
+				},
+			}); */
+			// return res.redirect('/500');
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };
 
 exports.getProducts = (req, res, next) => {
@@ -69,20 +88,26 @@ exports.getEditProduct = (req, res, next) => {
 	if (!editMode) {
 		return res.redirect('/');
 	}
-	Product.findById(prodId).then((product) => {
-		if (!product) {
-			return res.redirect('/');
-		}
-		res.render('admin/edit-product', {
-			pageTitle: 'Edit Product',
-			path: '/admin/edit-product',
-			editing: editMode,
-			product: product,
-			errorMessage: [],
-			hasError: false,
-			validationErrors: [],
+	Product.findById(prodId)
+		.then((product) => {
+			if (!product) {
+				return res.redirect('/');
+			}
+			res.render('admin/edit-product', {
+				pageTitle: 'Edit Product',
+				path: '/admin/edit-product',
+				editing: editMode,
+				product: product,
+				errorMessage: [],
+				hasError: false,
+				validationErrors: [],
+			});
+		})
+		.catch((err) => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
 		});
-	});
 };
 exports.postEditProduct = (req, res, next) => {
 	const prodId = req.body.productId;
@@ -122,7 +147,11 @@ exports.postEditProduct = (req, res, next) => {
 				res.redirect('/admin/products');
 			});
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => {
+			const error = new Error(err);
+			error.httpStatusCode = 500;
+			return next(error);
+		});
 };
 
 exports.postDeleteProduct = (req, res, next) => {

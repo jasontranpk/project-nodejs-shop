@@ -38,7 +38,7 @@ router.post(
 					}
 				});
 			})
-			.normalizeEmail(),
+			.normalizeEmail({ gmail_remove_dots: false }),
 		body(
 			'password',
 			'Please enter a password with only numbers and text and at least 5 characters'
