@@ -1,5 +1,7 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
+const https = require('https');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -7,6 +9,9 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const multer = require('multer');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
 
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -42,6 +47,8 @@ const fileFilter = (req, file, cb) => {
 	else cb(null, false);
 };
 const csrfProtection = csrf();
+const privateKey = fs.readFileSync('server.key');
+const certificate = fs.readFileSync('server.cert');
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -60,8 +67,16 @@ app.use(
 		store: store,
 	})
 );
+
+const accessLogStream = fs.createWriteStream(
+	path.join(__dirname, 'access.log'),
+	{ flags: 'a' }
+);
+app.use(morgan('combined', { stream: accessLogStream }));
 app.use(csrfProtection);
 app.use(flash());
+app.use(helmet());
+app.use(compression());
 
 app.use((req, res, next) => {
 	res.locals.isAuthenticated = req.session.isLoggedIn;
@@ -104,6 +119,14 @@ app.use((error, req, res, next) => {
 mongoose
 	.connect(MONGODB_URI)
 	.then(() => {
-		app.listen(3000);
+		/* 		https
+			.createServer(
+				{
+					key: privateKey,
+					cert: certificate,
+				},
+				app
+			) */
+		app.listen(process.env.PORT || 3000);
 	})
 	.catch();

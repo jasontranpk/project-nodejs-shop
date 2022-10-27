@@ -1,0 +1,8 @@
+{
+	"env": {
+		"MONGODB_URI": "mongodb+srv://admin:nodecomplete@cluster0.p0mjcad.mongodb.net/shop?retryWrites=true&w=majority",
+		"SENDGRID_API_KEY": "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",
+		"STRIPE_SECRET_KEY": "sk_test_51LvKqpDQZWMtUfKVbewL9cPh3MFUDhpK2bYOkY0spSDd9u3fqgVvTGrqXVL9df2T39phBDGQUaZxFr1HEUc25gt900ltLCC8JA",
+		"PORT": 3000
+	}
+}
