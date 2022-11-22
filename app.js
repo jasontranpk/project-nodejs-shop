@@ -49,7 +49,36 @@ const fileFilter = (req, file, cb) => {
 const csrfProtection = csrf();
 /* const privateKey = fs.readFileSync('server.key');
 const certificate = fs.readFileSync('server.cert'); */
-
+app.use(
+	helmet.contentSecurityPolicy({
+		directives: {
+			'default-src': ["'self'"],
+			'script-src': [
+				"'self'",
+				"'unsafe-inline'",
+				'js.stripe.com',
+				'https://checkout.stripe.com',
+			],
+			'style-src': [
+				"'self'",
+				"'unsafe-inline'",
+				'fonts.googleapis.com',
+				'https://checkout.stripe.com',
+			],
+			'frame-src': [
+				"'self'",
+				'js.stripe.com',
+				'https://checkout.stripe.com',
+			],
+			'font-src': [
+				"'self'",
+				'fonts.googleapis.com',
+				'fonts.gstatic.com',
+				'https://checkout.stripe.com',
+			],
+		},
+	})
+);
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -75,34 +104,8 @@ const accessLogStream = fs.createWriteStream(
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(csrfProtection);
 app.use(flash());
-/* const scriptSources = [
-	"'self'",
-	'https://js.stripe.com',
-	"'unsafe-inline'",
-	'nonce-2726c7f26c',
-];
-app.use(
-	helmet({
-		contentSecurityPolicy: {
-			useDefaults: true,
 
-			directives: {
-				connectSrc: [
-					"'self'",
-					'https://js.stripe.com',
-					"'unsafe-inline'",
-				],
-
-				scriptSrc: scriptSources,
-
-				frameSrc: ["'self'", 'https://js.stripe.com'],
-
-				scriptSrcAttr: ["'unsafe-inline'"],
-			},
-		},
-	})
-);
-app.use((req, res, next) => {
+/* app.use((req, res, next) => {
 	res.removeHeader('Cross-Origin-Resource-Policy');
 	res.removeHeader('Cross-Origin-Embedder-Policy');
 	next();
@@ -144,6 +147,7 @@ app.use((error, req, res, next) => {
 		pageTitle: 'Error',
 		path: '/500',
 		errorMessage: error,
+		isAuthenticated: req.session.isLoggedIn,
 	});
 });
 
