@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const helmet = require('helmet');
 const PDFDocument = require('pdfkit');
 require('dotenv').config();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -8,7 +7,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Product = require('../models/product');
 const Order = require('../models/order');
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 6;
 
 exports.getIndex = (req, res, next) => {
 	const page = +req.query.page || 1;
@@ -117,6 +116,7 @@ exports.getCart = (req, res, next) => {
 		.populate('cart.items.productId')
 		.then((user) => {
 			const products = user.cart.items;
+			console.log(products);
 			res.render('shop/cart', {
 				pageTitle: 'Your Cart',
 				path: '/cart',

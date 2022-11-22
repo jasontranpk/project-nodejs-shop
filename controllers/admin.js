@@ -192,7 +192,7 @@ exports.postDeleteProduct = (req, res, next) => {
 };
 
 exports.deleteProduct = (req, res, next) => {
-	const prodId = req.params.productId;
+	const prodId = req.body.productId;
 	Product.findById(prodId)
 		.then((p) => {
 			if (!p) {
@@ -202,9 +202,7 @@ exports.deleteProduct = (req, res, next) => {
 			return Product.deleteOne({ _id: prodId, userId: req.user._id });
 		})
 		.then(() => {
-			res.status(200).json({
-				message: 'Success!',
-			});
+			res.redirect('/admin/products');
 		})
 		.catch((err) =>
 			res.status(500).json({
