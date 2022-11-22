@@ -11,6 +11,9 @@
             <div class='user-message user-message--error'><%= errorMessage %></div>
         <% } %>
         <form class="login-form" action="/login" method="POST">
+            <div class="text-box">
+                <p><b>Demo Account:</b> sample1@gmail.com <br> <b>Password:</b> 111111</p>
+            </div>
             <div class="form-control">
                 <label for="email">Email</label>
                 <input class="<%= validationErrors.find(e => e.param ==='email') ? 'invalid': '' %>" type="text" name="email" id="email" value="<%= oldInput.email %>">
@@ -20,7 +23,7 @@
                 <input class="<%= validationErrors.find(e => e.param ==='password') ? 'invalid': '' %>" type="password" name="password" id="password" />
             </div>
             <input type='hidden' value ='<%= csrfToken %>' name='_csrf' /> 
-            <button class="btn" type="submit">Login</button>
+            <button class="btn centered" type="submit">Login</button>
         </form>
         <div class="centered"><a href="/reset">Reset Password</a></div>
     </main>

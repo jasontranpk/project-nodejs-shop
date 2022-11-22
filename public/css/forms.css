@@ -26,3 +26,8 @@
 .form-control textarea.invalid {
 	border-color: red;
 }
+.text-box {
+	text-align: center;
+	border: 1px #cc7d22 solid;
+	border-radius: 5px;
+}
