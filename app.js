@@ -75,7 +75,38 @@ const accessLogStream = fs.createWriteStream(
 app.use(morgan('combined', { stream: accessLogStream }));
 app.use(csrfProtection);
 app.use(flash());
-app.use(helmet());
+/* const scriptSources = [
+	"'self'",
+	'https://js.stripe.com',
+	"'unsafe-inline'",
+	'nonce-2726c7f26c',
+];
+app.use(
+	helmet({
+		contentSecurityPolicy: {
+			useDefaults: true,
+
+			directives: {
+				connectSrc: [
+					"'self'",
+					'https://js.stripe.com',
+					"'unsafe-inline'",
+				],
+
+				scriptSrc: scriptSources,
+
+				frameSrc: ["'self'", 'https://js.stripe.com'],
+
+				scriptSrcAttr: ["'unsafe-inline'"],
+			},
+		},
+	})
+);
+app.use((req, res, next) => {
+	res.removeHeader('Cross-Origin-Resource-Policy');
+	res.removeHeader('Cross-Origin-Embedder-Policy');
+	next();
+}); */
 app.use(compression());
 
 app.use((req, res, next) => {
