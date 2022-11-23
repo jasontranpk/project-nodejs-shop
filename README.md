@@ -36,6 +36,7 @@ Online Store - Full Stack App
     <li><a href="https://expressjs.com/">Express.js</a></li>
     <li><a href="https://jwt.io/">JWT</a></li>
     <li><a href="https://ejs.co/">EJS engine</a></li>
+    <li><a href="https://stripe.com/docs/api">Stripe API</a></li>
   </ul>
 </details>
 
